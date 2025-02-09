@@ -1,0 +1,6 @@
+@HvP.examify_take_exam.service_HostAddress = http://localhost:5292
+
+GET {{HvP.examify_take_exam.service_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
