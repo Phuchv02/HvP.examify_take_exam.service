@@ -14,10 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\HvP.examify_take_exam.DB\HvP.examify_take_exam.DB.csproj" />
   </ItemGroup>
 
