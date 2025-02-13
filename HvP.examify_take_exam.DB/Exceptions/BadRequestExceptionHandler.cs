@@ -34,7 +34,7 @@ namespace HvP.examify_take_exam.DB.Exceptions
             {
                 ErrorCode = badRequestException.ErrorMsg.ErrorCode,
                 Message = badRequestException.ErrorMsg.Message,
-                Details = badRequestException.ErrorMsg.Details
+                Details = badRequestException?.Details?.ToString()
             };
 
             // response

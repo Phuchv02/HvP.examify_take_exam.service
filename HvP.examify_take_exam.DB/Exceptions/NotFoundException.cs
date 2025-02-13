@@ -6,7 +6,7 @@ namespace HvP.examify_take_exam.DB.Exceptions
     {
         public NotFoundException(string? message) : base(message) { }
 
-        public NotFoundException(ErrorMsgModel errorMsg) : base(errorMsg) { }
+        public NotFoundException(ErrorMsgModel errorMsg, object? details = null) : base(errorMsg, details) { }
 
         public override string GetLogStr()
         {
@@ -16,15 +16,15 @@ namespace HvP.examify_take_exam.DB.Exceptions
             var message = this.ErrorMsg?.Message ?? this.Message ?? "No message provided";
             var stackTrace = this.StackTrace ?? "No stack trace available";
             var errorCode = this.ErrorMsg?.ErrorCode ?? "N/A";
-            var details = this.ErrorMsg?.Details ?? "No details available";
+            var details = this.Details ?? "No details available";
 
             return $@"
                 [EXCEPTION !!!]
                 [Timestamp: {timestamp}] [LogLevel: ERROR] 
-                [ExceptionType: {exceptionType}] [Message: {message}]
-                [ErrorCode: {errorCode}] [Thread: {threadId}]
-                [StackTrace: {stackTrace}]
-                [AdditionalData: {details}]";
+                [ExceptionType: {exceptionType}] - [Thread: {threadId}]
+                [ErrorCode: {errorCode}] - [Message: {message}]
+                [AdditionalData: {details}]
+                [StackTrace: {stackTrace}]";
         }
     }
 }

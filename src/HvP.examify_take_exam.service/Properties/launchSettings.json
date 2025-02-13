@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Api Gateway": {
+    "Take exam service": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

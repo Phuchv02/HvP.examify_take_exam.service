@@ -7,14 +7,16 @@ namespace HvP.examify_take_exam.DB.Exceptions
     {
         public HttpStatusCode StatusCode { get; } = HttpStatusCode.InternalServerError;
         public ErrorMsgModel ErrorMsg { get; }
+        public object? Details { get; set; }
 
         // default constructor
         public BaseException(string? message) : base(message) { }
 
         // constructor with errorMsg
-        public BaseException(ErrorMsgModel errorMsg)
+        public BaseException(ErrorMsgModel errorMsg, object? details = null)
         {
             this.ErrorMsg = errorMsg;
+            this.Details = details;
         }
 
         public virtual string GetLogStr()
@@ -25,15 +27,15 @@ namespace HvP.examify_take_exam.DB.Exceptions
             var message = this.ErrorMsg?.Message ?? this.Message ?? "No message provided";
             var stackTrace = this.StackTrace ?? "No stack trace available";
             var errorCode = this.ErrorMsg?.ErrorCode ?? "N/A";
-            var details = this.ErrorMsg?.Details ?? "No details available";
+            var details = this.Details ?? "No details available";
 
             return $@"
                 [EXCEPTION !!!]
                 [Timestamp: {timestamp}] [LogLevel: ERROR] 
-                [ExceptionType: {exceptionType}] [Message: {message}]
-                [ErrorCode: {errorCode}] [Thread: {threadId}]
-                [StackTrace: {stackTrace}]
-                [AdditionalData: {details}]";
+                [ExceptionType: {exceptionType}] - [Thread: {threadId}]
+                [ErrorCode: {errorCode}] - [Message: {message}]
+                [Details: {details}]
+                [StackTrace: {stackTrace}]";
         }
     }
 }

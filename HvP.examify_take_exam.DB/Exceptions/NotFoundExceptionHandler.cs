@@ -34,7 +34,7 @@ namespace HvP.examify_take_exam.DB.Exceptions
             {
                 ErrorCode = notFoundException.ErrorMsg.ErrorCode,
                 Message = notFoundException.ErrorMsg.Message,
-                Details = notFoundException.ErrorMsg.Details
+                Details = notFoundException?.Details?.ToString()
             };
 
             // response
