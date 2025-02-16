@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using HvP.examify_take_exam.DB.Constants.Errors;
 using HvP.examify_take_exam.DB.Exceptions;
-using HvP.examify_take_exam.service.Services;
+using HvP.examify_take_exam.Services;
 using HvP.examify_take_exam.DB.Extentions;
 
-namespace HvP.examify_take_exam.service.Controllers
+namespace HvP.examify_take_exam.Controllers
 {
     [ApiController]
     [Route("api/v1/take-exam")]

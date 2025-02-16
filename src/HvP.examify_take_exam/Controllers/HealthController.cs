@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace HvP.examify_take_exam.service.Controllers
+namespace HvP.examify_take_exam.Controllers
 {
     [ApiController]
     [Route("api/health")]

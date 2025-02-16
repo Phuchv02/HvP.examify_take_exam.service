@@ -1,7 +1,7 @@
 ﻿using HvP.Database.DBContexts;
 using HvP.examify_take_exam.DB.Repository;
 
-namespace HvP.examify_take_exam.service.Services
+namespace HvP.examify_take_exam.Services
 {
     public class TakeExamService : ITakeExamService
     {

@@ -1,7 +1,7 @@
 ﻿using HvP.Database.DBContexts;
 using HvP.DB.Common.Config;
 using HvP.examify_take_exam.DB.Exceptions;
-using HvP.examify_take_exam.service.Services;
+using HvP.examify_take_exam.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

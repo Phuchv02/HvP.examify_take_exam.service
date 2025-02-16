@@ -12,19 +12,19 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["HvP.examify_take_exam.service/HvP.examify_take_exam.service.csproj", "HvP.examify_take_exam.service/"]
-RUN dotnet restore "./HvP.examify_take_exam.service/HvP.examify_take_exam.service.csproj"
+COPY ["HvP.examify_take_exam/HvP.examify_take_exam.csproj", "HvP.examify_take_exam/"]
+RUN dotnet restore "./HvP.examify_take_exam/HvP.examify_take_exam.csproj"
 COPY . .
-WORKDIR "/src/HvP.examify_take_exam.service"
-RUN dotnet build "./HvP.examify_take_exam.service.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/HvP.examify_take_exam"
+RUN dotnet build "./HvP.examify_take_exam.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./HvP.examify_take_exam.service.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./HvP.examify_take_exam.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "HvP.examify_take_exam.service.dll"]
+ENTRYPOINT ["dotnet", "HvP.examify_take_exam.dll"]

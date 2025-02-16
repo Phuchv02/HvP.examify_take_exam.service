@@ -1,4 +1,4 @@
-﻿namespace HvP.examify_take_exam.service.Services
+﻿namespace HvP.examify_take_exam.Services
 {
     public interface ITakeExamService
     {
