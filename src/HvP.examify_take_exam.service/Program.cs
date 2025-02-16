@@ -1,12 +1,13 @@
 ﻿using HvP.Database.DBContexts;
 using HvP.DB.Common.Config;
 using HvP.examify_take_exam.DB.Exceptions;
+using HvP.examify_take_exam.service.Services;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// TODO
+// Inject Service dependency
+builder.Services.AddScoped<ITakeExamService, TakeExamService>();
 
 // Add config connect DB
 builder.Services.AddScoped<CommonDBContext>(provider =>

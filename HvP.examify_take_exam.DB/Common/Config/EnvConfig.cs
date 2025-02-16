@@ -1,4 +1,6 @@
 ﻿using HvP.examify_take_exam.DB.Common.Models;
+using HvP.examify_take_exam.DB.Constants.Errors;
+using HvP.examify_take_exam.DB.Exceptions;
 
 namespace HvP.DB.Common.Config
 {
@@ -15,7 +17,7 @@ namespace HvP.DB.Common.Config
             }
             if (rs == null)
             {
-                throw new Exception($"Get config from ENV error, ConfigKey: {configKey}");
+                throw new NotFoundException(ErrorMsg.ErrGetEnvConfig(configKey));
             }
             return rs;
         }

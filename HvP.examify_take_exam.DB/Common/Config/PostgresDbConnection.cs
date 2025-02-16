@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using System.Data.Common;
-using System.Data;
+﻿using Npgsql;
 using HvP.examify_take_exam.DB.Common.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HvP.DB.Common.Config
 {
@@ -17,16 +15,6 @@ namespace HvP.DB.Common.Config
             this.configModel = configModel;
         }
 
-        public static string GetConnectionString(DBConfigModel configModel)
-        {
-            if (configModel == null)
-            {
-                return null;
-            }
-
-            return $"Host={configModel.Address};Port={configModel.Port};User ID={configModel.Username};Password={configModel.Password};Database={configModel.DatabaseName};";
-        }
-
         public string GetConnectionString()
         {
             if (configModel == null)
@@ -35,23 +23,11 @@ namespace HvP.DB.Common.Config
             }
 
             return $"Host={configModel.Address};Port={configModel.Port};User ID={configModel.Username};Password={configModel.Password};Database={configModel.DatabaseName};";
-        }
-
-        public IDbConnection GetConnection()
-        {
-            conn = new NpgsqlConnection(GetConnectionString());
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", isEnabled: true);
-            return conn;
-        }
-
-        public DbTransaction BeginTransaction()
-        {
-            return conn.BeginTransaction();
+            //return $"Host={configModel.Address};Port={configModel.Port};User ID={configModel.Username};Password={configModel.Password};Database={configModel.DatabaseName};Pooling=true;MinPoolSize=5;MaxPoolSize=100;Timeout=20;CommandTimeout=60;";
         }
 
         public void SetOptionBuilder(ref DbContextOptionsBuilder optionsBuilder)
         {
-            GetConnectionString();
             optionsBuilder.UseNpgsql(GetConnectionString());
         }
 

@@ -1,11 +1,11 @@
 ﻿using System.Net;
 using HvP.examify_take_exam.DB.Constants.Errors;
+using HvP.examify_take_exam.DB.Models;
 
 namespace HvP.examify_take_exam.DB.Exceptions
 {
     public class BaseException : Exception
     {
-        public HttpStatusCode StatusCode { get; } = HttpStatusCode.InternalServerError;
         public ErrorMsgModel ErrorMsg { get; }
         public object? Details { get; set; }
 
@@ -19,12 +19,22 @@ namespace HvP.examify_take_exam.DB.Exceptions
             this.Details = details;
         }
 
+        public virtual ErrorResponseModel<object> GetResponseError()
+        {
+            return new ErrorResponseModel<object>()
+            {
+                ErrorCode = this.ErrorMsg.ErrorCode,
+                Message = this.ErrorMsg.Message,
+                Details = this?.Details?.ToString()
+            };
+        }
+
         public virtual string GetLogStr()
         {
             var timestamp = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss");
             var threadId = Thread.CurrentThread.ManagedThreadId;
             var exceptionType = this.GetType().Name;
-            var message = this.ErrorMsg?.Message ?? this.Message ?? "No message provided";
+            var message = this.ErrorMsg?.LogMessage ?? this.ErrorMsg?.Message ?? this.Message ?? "No message provided";
             var stackTrace = this.StackTrace ?? "No stack trace available";
             var errorCode = this.ErrorMsg?.ErrorCode ?? "N/A";
             var details = this.Details ?? "No details available";

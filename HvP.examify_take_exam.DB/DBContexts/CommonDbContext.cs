@@ -1,5 +1,7 @@
 using HvP.DB.Common.Config;
+using HvP.examify_take_exam.DB.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace HvP.Database.DBContexts
 {
@@ -8,7 +10,7 @@ namespace HvP.Database.DBContexts
         public IDBConnection dbconnection;
 
         // DB Set
-        //public virtual DbSet<UserEntity> I_Users { get; set; }
+        public virtual DbSet<TakeExamEntity> TakeExams { get; set; }
 
         public CommonDBContext() { }
 
@@ -17,13 +19,13 @@ namespace HvP.Database.DBContexts
             this.dbconnection = dbConnection;
         }
 
-        public CommonDBContext(DbContextOptions<CommonDBContext> options)
-        : base(options) { }
-
-
-        public IDBConnection GetConnection()
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            return (IDBConnection)dbconnection.GetConnection();
+            base.OnConfiguring(optionsBuilder);
+            dbconnection.SetOptionBuilder(ref optionsBuilder);
+
+            // # debug mode
+            // optionsBuilder.EnableSensitiveDataLogging();
         }
 
         public static async Task<bool> CreateDatabase(IDBConnection dbConnection)

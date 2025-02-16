@@ -7,9 +7,9 @@ namespace HvP.DB.Common.Config
     public interface IDBConnection
     {
         string GetConnectionString();
-        IDbConnection GetConnection();
-        void SetOptionBuilder(ref DbContextOptionsBuilder optionsBuilder);
         DBConfigModel GetDBConfig();
+        void SetOptionBuilder(ref DbContextOptionsBuilder optionsBuilder);
+        //IDbConnection GetConnection();
 
         //EnumDBProvider GetDBProvider();
 
