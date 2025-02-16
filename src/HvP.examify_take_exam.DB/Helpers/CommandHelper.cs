@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 
 namespace HvP.examify_take_exam.DB.Helpers
 {
@@ -13,17 +14,20 @@ namespace HvP.examify_take_exam.DB.Helpers
                     FileName = "cmd.exe",
                     Arguments = $"/C {command}",
                     RedirectStandardOutput = true,
+                    RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    WorkingDirectory = workingDirectory
+                    WorkingDirectory = workingDirectory,
+                    StandardOutputEncoding = Encoding.UTF8
                 }
             };
 
             process.Start();
             string result = await process.StandardOutput.ReadToEndAsync();
+            string error = await process.StandardError.ReadToEndAsync();
             await process.WaitForExitAsync();
 
-            return result;
+            return string.IsNullOrEmpty(error) ? result : error;
         }
     }
 }
