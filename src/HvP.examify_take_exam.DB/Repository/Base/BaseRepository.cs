@@ -3,21 +3,25 @@ using HvP.Database.DBContexts;
 using HvP.examify_take_exam.DB.Constants.Errors;
 using HvP.examify_take_exam.DB.Entities;
 using HvP.examify_take_exam.DB.Exceptions;
+using HvP.examify_take_exam.DB.Repository.Cache;
+using HvP.examify_take_exam.DB.Cache;
 
 namespace HvP.examify_take_exam.DB.Repository.Base
 {
     public class BaseRepository<TEntity> where TEntity : BaseEntity, new()
     {
         protected readonly CommonDBContext _dbContext;
+        private ICacheRepository _repositoryCache;
 
-        public BaseRepository(CommonDBContext dbContext)
+        public BaseRepository(CommonDBContext dbContext, ICache cache)
         {
             this._dbContext = dbContext;
+            this._repositoryCache = new CacheRepository(cache);
         }
 
-        public virtual string GetRepositoryName()
+        public virtual string GetEntityName()
         {
-            return nameof(BaseRepository<TEntity>);
+            return nameof(TEntity);
         }
 
         /// <summary>
@@ -29,13 +33,29 @@ namespace HvP.examify_take_exam.DB.Repository.Base
         /// A queryable Entity object.
         /// </returns>
         /// <exception cref="BaseException"></exception>
-        public virtual async Task<TEntity?> GetByIdAsync(long id, bool isTracking = false)
+        public virtual async Task<TEntity?> GetByIdAsync(long id, bool isCache = false, bool isTracking = false)
         {
+            string funcName = nameof(GetByIdAsync);
             try
             {
-                DbSet<TEntity> dbSet = _dbContext.Set<TEntity>();
-                IQueryable<TEntity> source = (isTracking ? dbSet.AsQueryable() : dbSet.AsNoTracking().AsQueryable());
-                return await source.Where((TEntity entity) => entity.DeletedFlag != true && entity.Id == id).FirstOrDefaultAsync();
+                string cacheKey = $"{this.GetEntityName()}_{funcName}:{id}";
+                TEntity? entity = null;
+                if (!isTracking && isCache)
+                {
+                    entity = await this._repositoryCache.GetDataAsync<TEntity>(cacheKey, null);
+                }
+
+                if (entity == null)
+                {
+                    DbSet<TEntity> dbSet = _dbContext.Set<TEntity>();
+                    IQueryable<TEntity> source = (isTracking ? dbSet.AsQueryable() : dbSet.AsNoTracking().AsQueryable());
+                    entity = await source.Where((TEntity entity) => entity.DeletedFlag != true && entity.Id == id).FirstOrDefaultAsync();
+                    if (entity != null)
+                    {
+                        this._repositoryCache.SetData<TEntity>(this.GetEntityName(), cacheKey, entity);
+                    }
+                }
+                return entity;
             }
             catch (Exception ex)
             {
@@ -67,6 +87,8 @@ namespace HvP.examify_take_exam.DB.Repository.Base
                 entity = _dbContext.Set<TEntity>().Add(entity).Entity;
                 await _dbContext.SaveChangesAsync();
 
+                this._repositoryCache.ClearByEntity(GetEntityName());
+
                 return entity;
             }
             catch (Exception ex)
@@ -96,6 +118,8 @@ namespace HvP.examify_take_exam.DB.Repository.Base
                 entity.UpdatedAt = DateTime.UtcNow;
                 _dbContext.Set<TEntity>().Update(entity);
                 await _dbContext.SaveChangesAsync();
+
+                this._repositoryCache.ClearByEntity(GetEntityName());
 
                 return entity;
             }

@@ -1,7 +1,10 @@
 ﻿using HvP.Database.DBContexts;
 using HvP.DB.Common.Config;
+using HvP.examify_take_exam.DB.Cache;
 using HvP.examify_take_exam.DB.Exceptions;
+using HvP.examify_take_exam.DB.Repository.Cache;
 using HvP.examify_take_exam.Services;
+using StackExchange.Redis;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,12 +12,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Inject Service dependency
 builder.Services.AddScoped<ITakeExamService, TakeExamService>();
 
+// Inject Repository dependency
+builder.Services.AddScoped<ICacheRepository, CacheRepository>();
+
 // Add config connect DB
 builder.Services.AddScoped<CommonDBContext>(provider =>
 {
     IDBConnection dbConnection = new PostgresDbConnection(EnvConfig.MasterDatabaseConfig);
     return new CommonDBContext(dbConnection);
 });
+
+// Add config connect cache
+builder.Services.AddScoped<ICache>(provider =>
+{
+    ConnectionMultiplexer redisConnection = new RedisConnection(EnvConfig.RedisConfig).GetConnection();
+    return new RedisCache(redisConnection);
+});
+
 
 // Add config Serilog
 Log.Logger = new LoggerConfiguration()

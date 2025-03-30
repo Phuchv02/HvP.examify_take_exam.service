@@ -3,6 +3,7 @@ using HvP.examify_take_exam.DB.Constants.Errors;
 using HvP.examify_take_exam.DB.Exceptions;
 using HvP.examify_take_exam.Services;
 using HvP.examify_take_exam.DB.Extentions;
+using HvP.examify_take_exam.DB.Models;
 
 namespace HvP.examify_take_exam.Controllers
 {
@@ -21,11 +22,34 @@ namespace HvP.examify_take_exam.Controllers
 
         [HttpGet]
         [Route("get")]
-        public async Task<IActionResult> Test()
+        public async Task<IActionResult> Get([FromQuery] long id)
         {
-            var rs = await this._serviceImp.GetData();
+            // TODO: Add logger
 
-            return this.ResponseSuccess(rs);
+            try
+            {
+                var rs = await this._serviceImp.GetData(id);
+                return this.ResponseSuccess(rs);
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ErrorMsg.ErrGetEnvConfig(""), ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("create")]
+        public async Task<IActionResult> Create([FromForm] CreateTakeExamModel data)
+        {
+            try
+            {
+                var rs = await this._serviceImp.CreateAsync(data);
+                return this.ResponseSuccess(rs);
+            }
+            catch (Exception ex)
+            {
+                throw new BadRequestException(ErrorMsg.ErrGetEnvConfig(""), ex.Message);
+            }
         }
     }
 }
