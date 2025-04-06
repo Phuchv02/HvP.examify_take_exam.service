@@ -4,6 +4,7 @@ using HvP.examify_take_exam.DB.Exceptions;
 using HvP.examify_take_exam.Services;
 using HvP.examify_take_exam.DB.Extentions;
 using HvP.examify_take_exam.DB.Models;
+using HvP.examify_take_exam.DB.Logger;
 
 namespace HvP.examify_take_exam.Controllers
 {
@@ -11,10 +12,10 @@ namespace HvP.examify_take_exam.Controllers
     [Route("api/v1/take-exam")]
     public class TakeExamController : ControllerBase
     {
-        public ILogger _logger;
+        private readonly ILoggerService<TakeExamController> _logger;
         private ITakeExamService _serviceImp;
 
-        public TakeExamController(ILogger<TakeExamController> logger, ITakeExamService service)
+        public TakeExamController(ILoggerService<TakeExamController> logger, ITakeExamService service)
         {
             this._logger = logger;
             this._serviceImp = service;
@@ -25,6 +26,7 @@ namespace HvP.examify_take_exam.Controllers
         public async Task<IActionResult> Get([FromQuery] long id)
         {
             // TODO: Add logger
+            this._logger.LogInformation("Test Logger Controller");
 
             try
             {
@@ -41,6 +43,7 @@ namespace HvP.examify_take_exam.Controllers
         [Route("create")]
         public async Task<IActionResult> Create([FromForm] CreateTakeExamModel data)
         {
+            this._logger.LogVerbose("Create Logger Controller");
             try
             {
                 var rs = await this._serviceImp.CreateAsync(data);

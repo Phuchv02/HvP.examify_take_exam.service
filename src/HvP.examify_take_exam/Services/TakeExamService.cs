@@ -1,6 +1,7 @@
 ﻿using HvP.Database.DBContexts;
 using HvP.examify_take_exam.DB.Cache;
 using HvP.examify_take_exam.DB.Entities;
+using HvP.examify_take_exam.DB.Logger;
 using HvP.examify_take_exam.DB.Models;
 using HvP.examify_take_exam.DB.Repository;
 
@@ -9,12 +10,14 @@ namespace HvP.examify_take_exam.Services
     public class TakeExamService : ITakeExamService
     {
         private CommonDBContext _dbContext;
+        private readonly ILoggerService<TakeExamService> _logger;
         private ICache _cache;
         private TakeExamRepository _repositoryImp;
 
-        public TakeExamService(CommonDBContext dbContext, ICache cache, ILogger<TakeExamService> logger)
+        public TakeExamService(CommonDBContext dbContext, ICache cache, ILoggerService<TakeExamService> logger)
         {
             this._dbContext = dbContext;
+            this._logger = logger;
             this._cache = cache;
             this._repositoryImp = new TakeExamRepository(dbContext, cache);
         }
@@ -23,6 +26,8 @@ namespace HvP.examify_take_exam.Services
         {
             try
             {
+                this._logger.LogInformation("Test Logger Service");
+
                 var rs = await this._repositoryImp.GetByIdAsync(id, true);
 
                 return rs;

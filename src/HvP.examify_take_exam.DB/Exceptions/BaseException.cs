@@ -41,8 +41,7 @@ namespace HvP.examify_take_exam.DB.Exceptions
 
             return $@"
                 [EXCEPTION !!!]
-                [Timestamp: {timestamp}] [LogLevel: ERROR] 
-                [ExceptionType: {exceptionType}] - [Thread: {threadId}]
+                [{exceptionType}]
                 [ErrorCode: {errorCode}] - [Message: {message}]
                 [Details: {details}]
                 [StackTrace: {stackTrace}]";

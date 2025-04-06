@@ -6,10 +6,14 @@ using HvP.examify_take_exam.DB.Repository.Cache;
 using HvP.examify_take_exam.Services;
 using StackExchange.Redis;
 using Serilog;
+using Serilog.Events;
+using HvP.examify_take_exam.DB.Logger;
+using HvP.examify_take_exam.DB.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Inject Service dependency
+builder.Services.AddScoped(typeof(ILoggerService<>), typeof(LoggerService<>));
 builder.Services.AddScoped<ITakeExamService, TakeExamService>();
 
 // Inject Repository dependency
@@ -30,10 +34,29 @@ builder.Services.AddScoped<ICache>(provider =>
 });
 
 
-// Add config Serilog
+// # Add config Serilog
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    //.MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Debug()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+    .MinimumLevel.Override("System", LogEventLevel.Warning)
+    //.Enrich.WithProperty("Application", builder.Environment.ApplicationName)
+    //.Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
+    //.Enrich.WithMachineName()
+    .Enrich.With<TraceIdEnricher>()
+    .Enrich.With<MemoryUsageEnricher>()
+    .Enrich.With<SourceContextShortEnricher>()
+    .Enrich.WithProcessId()
+    .Enrich.WithThreadId()
+    .Enrich.FromLogContext()
+    //.WriteTo.File(
+    //    outputTemplate: LoggerService<Program>.GetOutPutTemplate(),
+    //    path: "logs/log-.json",
+    //    rollingInterval: RollingInterval.Day,
+    //    retainedFileCountLimit: 7)
+    .WriteTo.Async(log => log.Console(
+        theme: LoggerService<Program>.GetColorTheme(),
+        outputTemplate: LoggerService<Program>.GetOutPutTemplate()
+    ))
     .CreateLogger();
 
 builder.Services.AddControllers();
@@ -49,7 +72,7 @@ builder.Host.UseSerilog();
 
 try
 {
-    string startStr = File.ReadAllText("start.txt");
+    string startStr = $"\u001b[36m{File.ReadAllText("start.txt")}\u001b[0m";
     Log.Information(startStr);
 }
 catch (Exception ex)
@@ -58,6 +81,12 @@ catch (Exception ex)
 }
 
 var app = builder.Build();
+
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+lifetime.ApplicationStopping.Register(() =>
+{
+    Log.CloseAndFlush();
+});
 
 // Config Swagger
 if (app.Environment.IsDevelopment())
@@ -69,6 +98,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseMiddleware<TraceRequestMiddleware>();
 
 app.UseExceptionHandler(option => { });
 
