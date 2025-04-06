@@ -1,21 +1,22 @@
 # See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 5050
+EXPOSE 5051
 
 
 # This stage is used to build the service project
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["HvP.examify_take_exam/HvP.examify_take_exam.csproj", "HvP.examify_take_exam/"]
-RUN dotnet restore "./HvP.examify_take_exam/HvP.examify_take_exam.csproj"
+COPY ["src/HvP.examify_take_exam/HvP.examify_take_exam.csproj", "src/HvP.examify_take_exam/"]
+COPY ["src/HvP.examify_take_exam.DB/HvP.examify_take_exam.DB.csproj", "src/HvP.examify_take_exam.DB/"]
+RUN dotnet restore "./src/HvP.examify_take_exam/HvP.examify_take_exam.csproj"
 COPY . .
-WORKDIR "/src/HvP.examify_take_exam"
+WORKDIR "/src/src/HvP.examify_take_exam"
 RUN dotnet build "./HvP.examify_take_exam.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
