@@ -4,9 +4,10 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS base
 USER app
 WORKDIR /app
-EXPOSE 5050
-EXPOSE 5051
-
+EXPOSE 80
+# EXPOSE 443
+ENV ASPNETCORE_HTTP_PORTS=80
+# ENV ASPNETCORE_HTTPS_PORTS=443
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
