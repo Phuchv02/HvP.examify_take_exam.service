@@ -44,7 +44,7 @@ namespace HvP.examify_take_exam.DB.Logger
         public static string GetOutPutTemplate()
         {
             return new StringBuilder()
-            .Append($"[{{Timestamp:HH:mm:ss}}][{{Level:u4}}]")
+            .Append($"[{{Timestamp:HH:mm:ss}}][{{Level:u5}}]")
             .Append($"-[PID:{{ProcessId}}|TID:{{ThreadId}}|MEM:{{MemoryUsedMB}}MB]")
             .Append($"-[TraceId:{{CustomTraceId}}]")
             .Append($"-[{{SourceContextShort}}]: {{Message:lj}}{{NewLine}}{{Exception:j}}")

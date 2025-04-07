@@ -22,14 +22,16 @@ builder.Services.AddScoped<ICacheRepository, CacheRepository>();
 // Add config connect DB
 builder.Services.AddScoped<CommonDBContext>(provider =>
 {
-    IDBConnection dbConnection = new PostgresDbConnection(EnvConfig.MasterDatabaseConfig);
+    var logger = new LoggerService<PostgresDbConnection>();
+    IDBConnection dbConnection = new PostgresDbConnection(EnvConfig.MasterDatabaseConfig, logger);
     return new CommonDBContext(dbConnection);
 });
 
 // Add config connect cache
-builder.Services.AddScoped<ICache>(provider =>
+builder.Services.AddSingleton<ICache>(provider =>
 {
-    ConnectionMultiplexer redisConnection = new RedisConnection(EnvConfig.RedisConfig).GetConnection();
+    var logger = new LoggerService<RedisConnection>();
+    ConnectionMultiplexer redisConnection = new RedisConnection(EnvConfig.RedisConfig, logger).GetConnection();
     return new RedisCache(redisConnection);
 });
 
@@ -59,6 +61,19 @@ Log.Logger = new LoggerConfiguration()
     ))
     .CreateLogger();
 
+
+// # Config Swagger
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", builder =>
+    {
+        builder
+            .AllowAnyOrigin()  // Allow all domain
+            .AllowAnyMethod()  // Allow all HTTP methods (GET, POST, etc.)
+            .AllowAnyHeader(); // Allow all headers
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -81,6 +96,7 @@ catch (Exception ex)
 }
 
 var app = builder.Build();
+app.UseCors("AllowAllOrigins");
 
 var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
 lifetime.ApplicationStopping.Register(() =>

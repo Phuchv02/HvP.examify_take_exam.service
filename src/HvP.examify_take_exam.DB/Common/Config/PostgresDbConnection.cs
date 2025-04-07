@@ -1,17 +1,19 @@
 ﻿using Npgsql;
 using HvP.examify_take_exam.DB.Common.Models;
 using Microsoft.EntityFrameworkCore;
+using HvP.examify_take_exam.DB.Logger;
 
 namespace HvP.DB.Common.Config
 {
     public class PostgresDbConnection : IDBConnection
     {
         private NpgsqlConnection conn;
-
         private DBConfigModel configModel;
+        private readonly ILoggerService<PostgresDbConnection> _logger;
 
-        public PostgresDbConnection(DBConfigModel configModel)
+        public PostgresDbConnection(DBConfigModel configModel, ILoggerService<PostgresDbConnection> logger)
         {
+            this._logger = logger;
             this.configModel = configModel;
         }
 
@@ -29,7 +31,14 @@ namespace HvP.DB.Common.Config
 
         public void SetOptionBuilder(ref DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(GetConnectionString());
+            try
+            {
+                optionsBuilder.UseNpgsql(GetConnectionString());
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogFatal($"*** TRY CONNECT POSTGRES Fail***: Address={configModel.Address}, Port = {configModel.Port}");
+            }
         }
 
         public DBConfigModel GetDBConfig()

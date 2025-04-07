@@ -11,14 +11,22 @@ namespace HvP.examify_take_exam.DB.Cache
 
         public RedisCache(IConnectionMultiplexer redis)
         {
-            _database = redis.GetDatabase();
-            _redis = redis;
+            if (redis != null)
+            {
+                _database = redis.GetDatabase();
+                _redis = redis;
+            }
         }
 
         public bool SetByKey<T>(string key, T value, long? ttl = 3600)
         {
             try
             {
+                if (_database == null)
+                {
+                    return false;
+                }
+
                 lock (_lockObj)
                 {
                     var jsonData = JsonSerializer.Serialize(value);
@@ -37,6 +45,11 @@ namespace HvP.examify_take_exam.DB.Cache
         {
             try
             {
+                if (_database == null)
+                {
+                    return notfoundValue;
+                }
+
                 RedisValue value = await _database.StringGetAsync(key);
                 if (value.IsNullOrEmpty)
                 {
@@ -55,6 +68,11 @@ namespace HvP.examify_take_exam.DB.Cache
         {
             try
             {
+                if (_database == null)
+                {
+                    return false;
+                }
+
                 var rs = await _database.KeyDeleteAsync(key);
                 return rs;
             }
@@ -68,6 +86,11 @@ namespace HvP.examify_take_exam.DB.Cache
         {
             try
             {
+                if (_database == null)
+                {
+                    return false;
+                }
+
                 await _database.ExecuteAsync("FLUSHDB");
                 return true;
             }
