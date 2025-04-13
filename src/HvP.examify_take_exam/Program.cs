@@ -10,6 +10,8 @@ using HvP.examify_take_exam.Common.Config;
 using HvP.examify_take_exam.Common.Cache;
 using HvP.examify_take_exam.Common.Exceptions;
 using HvP.examify_take_exam.Common.Middlewares;
+using HvP.examify_take_exam.Common.RabbitMQ;
+using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,22 @@ builder.Services.AddSingleton<ICache>(provider =>
     ConnectionMultiplexer redisConnection = new RedisConnection(EnvConfig.RedisConfig, logger).GetConnection();
     return new RedisCache(redisConnection);
 });
+
+// Add config Message Broker
+await RabbitMqService.Instance.DeclareExchangeAndQueueAsync(
+        RabbitMqService.ExchangeTakeExam,
+        RabbitMqService.QueueTakeExam,
+        ExchangeType.Direct,
+        "");
+
+await RabbitMqService.Instance.DeclareExchangeAndQueueAsync(
+        RabbitMqService.ExchangeNotification,
+        RabbitMqService.QueueNotification,
+        ExchangeType.Direct,
+        "");
+
+// TODO: Add consumer background
+
 
 
 // # Add config Serilog

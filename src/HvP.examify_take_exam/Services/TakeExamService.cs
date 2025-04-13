@@ -1,6 +1,7 @@
 ﻿using HvP.Database.DBContexts;
 using HvP.examify_take_exam.Common.Cache;
 using HvP.examify_take_exam.Common.Logger;
+using HvP.examify_take_exam.Common.RabbitMQ;
 using HvP.examify_take_exam.DB.Entities;
 using HvP.examify_take_exam.DB.Models;
 using HvP.examify_take_exam.DB.Repository;
@@ -45,6 +46,8 @@ namespace HvP.examify_take_exam.Services
                 TakeExamEntity entity = objData.PlainToEntity();
 
                 var rs = await this._repositoryImp.InsertAsync(entity);
+
+                await RabbitMqService.Instance.PushMessage(RabbitMqService.ExchangeTakeExam, "", rs);
 
                 return rs;
             }
