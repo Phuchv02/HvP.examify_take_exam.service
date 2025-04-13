@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using HvP.Database.DBContexts;
-using HvP.examify_take_exam.DB.Constants.Errors;
 using HvP.examify_take_exam.DB.Entities;
-using HvP.examify_take_exam.DB.Exceptions;
 using HvP.examify_take_exam.DB.Repository.Cache;
-using HvP.examify_take_exam.DB.Cache;
+using HvP.examify_take_exam.Common.Cache;
+using HvP.examify_take_exam.Common.Exceptions;
+using HvP.examify_take_exam.Common.Constants.Errors;
 
 namespace HvP.examify_take_exam.DB.Repository.Base
 {

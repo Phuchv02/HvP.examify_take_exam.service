@@ -1,7 +1,6 @@
-using HvP.DB.Common.Config;
+using HvP.examify_take_exam.Common.Config;
 using HvP.examify_take_exam.DB.Entities;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace HvP.Database.DBContexts
 {

@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\HvP.examify_take_exam.Common\HvP.examify_take_exam.Common.csproj" />
     <ProjectReference Include="..\HvP.examify_take_exam.DB\HvP.examify_take_exam.DB.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using HvP.Database.DBContexts;
-using HvP.examify_take_exam.DB.Cache;
+using HvP.examify_take_exam.Common.Cache;
 using HvP.examify_take_exam.DB.Entities;
 using HvP.examify_take_exam.DB.Repository.Base;
 

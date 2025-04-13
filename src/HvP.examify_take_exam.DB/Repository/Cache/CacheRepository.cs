@@ -1,4 +1,4 @@
-﻿using HvP.examify_take_exam.DB.Cache;
+﻿using HvP.examify_take_exam.Common.Cache;
 
 namespace HvP.examify_take_exam.DB.Repository.Cache
 {

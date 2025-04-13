@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HvP.examify_take_exam", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HvP.examify_take_exam.DB", "src\HvP.examify_take_exam.DB\HvP.examify_take_exam.DB.csproj", "{D7BBFAC1-8457-44A6-8D6A-5131A1DDE4D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HvP.examify_take_exam.Common", "src\HvP.examify_take_exam.Common\HvP.examify_take_exam.Common.csproj", "{8D03C24D-2CFA-4076-9E79-88099FD2BB95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D7BBFAC1-8457-44A6-8D6A-5131A1DDE4D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7BBFAC1-8457-44A6-8D6A-5131A1DDE4D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7BBFAC1-8457-44A6-8D6A-5131A1DDE4D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D03C24D-2CFA-4076-9E79-88099FD2BB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D03C24D-2CFA-4076-9E79-88099FD2BB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D03C24D-2CFA-4076-9E79-88099FD2BB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D03C24D-2CFA-4076-9E79-88099FD2BB95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

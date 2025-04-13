@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
-using HvP.examify_take_exam.DB.Constants.Errors;
-using HvP.examify_take_exam.DB.Exceptions;
 using HvP.examify_take_exam.Services;
-using HvP.examify_take_exam.DB.Extentions;
 using HvP.examify_take_exam.DB.Models;
-using HvP.examify_take_exam.DB.Logger;
+using HvP.examify_take_exam.Common.Logger;
+using HvP.examify_take_exam.Common.Exceptions;
+using HvP.examify_take_exam.Common.Constants.Errors;
+using HvP.examify_take_exam.Common.Extentions;
 
 namespace HvP.examify_take_exam.Controllers
 {

@@ -1,14 +1,15 @@
 ﻿using HvP.Database.DBContexts;
-using HvP.DB.Common.Config;
-using HvP.examify_take_exam.DB.Cache;
-using HvP.examify_take_exam.DB.Exceptions;
 using HvP.examify_take_exam.DB.Repository.Cache;
 using HvP.examify_take_exam.Services;
 using StackExchange.Redis;
 using Serilog;
 using Serilog.Events;
-using HvP.examify_take_exam.DB.Logger;
-using HvP.examify_take_exam.DB.Middlewares;
+using HvP.examify_take_exam.Common.Logger;
+using HvP.Common.Config;
+using HvP.examify_take_exam.Common.Config;
+using HvP.examify_take_exam.Common.Cache;
+using HvP.examify_take_exam.Common.Exceptions;
+using HvP.examify_take_exam.Common.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
