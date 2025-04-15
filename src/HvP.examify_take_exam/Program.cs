@@ -51,8 +51,8 @@ await RabbitMqService.Instance.DeclareExchangeAndQueueAsync(
         ExchangeType.Direct,
         "");
 
-// TODO: Add consumer background
-
+// # Start All Comsumer
+RabbitMqService.Instance.StartAllConsuming();
 
 
 // # Add config Serilog

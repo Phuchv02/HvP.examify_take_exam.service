@@ -1,14 +1,13 @@
-﻿using HvP.examify_take_exam.Common.Logger;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using System.Text.Json;
 using System.Text;
-using RabbitMQ.Client.Events;
 using HvP.Common.Config;
-using System.Net.Http.Headers;
+using HvP.examify_take_exam.Common.Logger;
+using HvP.examify_take_exam.Common.RabbitMQ.Consumers;
 
 namespace HvP.examify_take_exam.Common.RabbitMQ
 {
-    public sealed class RabbitMqService
+    public sealed class RabbitMqService : IDisposable
     {
         private IConnection _connection;
         private readonly ILoggerService<RabbitMqService> _logger;
@@ -20,6 +19,33 @@ namespace HvP.examify_take_exam.Common.RabbitMQ
             this._connection = connection;
         }
 
+        // # Exchange Define
+        public static string ExchangeTakeExam => "TakeExam_Exchange";
+        public static string ExchangeNotification => "Notification_Exchange";
+
+        // # Queue Define
+        public static string QueueTakeExam => "TakeExam_Queue";
+        public static string QueueNotification => "Notification_Queue";
+
+
+        /// <summary>
+        /// Consumer Config
+        /// </summary>
+        /// <returns></returns>
+        private Dictionary<string, IMessageConsumer> GetConsumerConfig()
+        {
+            return new Dictionary<string, IMessageConsumer>
+            {
+                {
+                    RabbitMqService.QueueTakeExam,
+                    new NotificationMessageConsumer(_connection, new LoggerService<NotificationMessageConsumer>())
+                }
+            };
+        }
+
+        /// <summary>
+        /// RabbitMqService Instance
+        /// </summary>
         public static RabbitMqService Instance
         {
             get
@@ -36,6 +62,14 @@ namespace HvP.examify_take_exam.Common.RabbitMQ
             }
         }
 
+        /// <summary>
+        /// DeclareExchangeAndQueueAsync()
+        /// </summary>
+        /// <param name="exchangeName"></param>
+        /// <param name="queueName"></param>
+        /// <param name="exchangeType"></param>
+        /// <param name="routingKey"></param>
+        /// <returns></returns>
         public async Task DeclareExchangeAndQueueAsync(string exchangeName, string queueName, string exchangeType = ExchangeType.Direct, string routingKey = "")
         {
             IChannel? channel = null;
@@ -75,6 +109,14 @@ namespace HvP.examify_take_exam.Common.RabbitMQ
             }
         }
 
+        /// <summary>
+        /// PushMessage()
+        /// </summary>
+        /// <param name="exchangeName"></param>
+        /// <param name="routingKey"></param>
+        /// <param name="message"></param>
+        /// <param name="isPersit"></param>
+        /// <returns></returns>
         public async Task PushMessage(string exchangeName, string routingKey, object message, bool isPersit = true)
         {
             IChannel? channel = null;
@@ -109,43 +151,27 @@ namespace HvP.examify_take_exam.Common.RabbitMQ
             }
         }
 
-        public async Task StartConsummerAsync<T>(string queueName, Func<T, Task> handleMessageFunc)
+        /// <summary>
+        /// StartAllConsuming()
+        /// </summary>
+        public void StartAllConsuming()
         {
-            var channel = await _connection.CreateChannelAsync();
-            await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false);
-            var consumer = new AsyncEventingBasicConsumer(channel);
+            var consumers = GetConsumerConfig();
 
-            consumer.ReceivedAsync += async (ch, args) =>
+            foreach (var consumer in consumers)
             {
-                try
-                {
-                    var body = args.Body.ToArray();
-                    var message = JsonSerializer.Deserialize<T>(Encoding.UTF8.GetString(body));
-
-                    if (message != null)
-                    {
-                        await handleMessageFunc(message);
-                    }
-
-                    await channel.BasicAckAsync(args.DeliveryTag, false);
-                }
-                catch (Exception ex)
-                {
-                    this._logger.LogError($"Receive Message Fail ***: queueName = {queueName}");
-                    await channel.BasicNackAsync(args.DeliveryTag, false, requeue: false);
-                }
-            };
-
-            await channel.BasicConsumeAsync(queue: queueName, autoAck: false, consumer: consumer);
-
-            this._logger.LogInformation($"*** STARTED CONSUMING Message from Queue: {queueName}");
+                string queueName = consumer.Key;
+                IMessageConsumer consumerHandler = consumer.Value;
+                consumerHandler.StartConsuming(queueName);
+            }
         }
 
-        // # Exchange Define
-        public static string ExchangeTakeExam => "TakeExam_Exchange";
-        public static string ExchangeNotification => "Notification_Exchange";
-
-        public static string QueueTakeExam => "TakeExam_Queue";
-        public static string QueueNotification => "Notification_Queue";
+        public async void Dispose()
+        {
+            if (_connection != null)
+            {
+                await _connection.CloseAsync();
+            }
+        }
     }
 }
